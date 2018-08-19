@@ -48,8 +48,11 @@
     },
     methods: {
       setCode (routesData) {
+        console.log(routesData['/page/center.html'],'--------routesData');
+        console.log(this.currentRoute,'this.currentRoute');
         const { editor } = this
         if (editor) editor.setValue(routesData[this.currentRoute].html)
+        // if (editor) editor.setValue(routesData['/page/center.html'].html)
       }
     }
   }

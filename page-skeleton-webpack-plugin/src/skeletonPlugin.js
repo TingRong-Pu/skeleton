@@ -33,6 +33,7 @@ SkeletonPlugin.prototype.insertScriptToClient = function (htmlPluginData) { // e
     const clientEntry = `http://localhost:${port}/${staticPath}/index.bundle.js`
     const oldHtml = htmlPluginData.html
     htmlPluginData.html = addScriptTag(oldHtml, clientEntry, port)
+    console.log('-----insertScriptToClient-----htmlPluginData.html----',htmlPluginData.html);
   }
 }
 
@@ -46,23 +47,28 @@ SkeletonPlugin.prototype.outputSkeletonScreen = async function () { // eslint-di
 
 SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line func-names
   if (compiler.hooks) {
+    console.log('------compiler.hooks  true-----');
     compiler.hooks.entryOption.tap(PLUGIN_NAME, () => {
       this.createServer()
     })
 
     compiler.hooks.compilation.tap(PLUGIN_NAME, (compilation) => {
+      console.log('--------compilation------');
       compilation.hooks.htmlWebpackPluginBeforeHtmlProcessing.tapAsync(PLUGIN_NAME, (htmlPluginData, callback) => {
         this.insertScriptToClient(htmlPluginData)
         callback(null, htmlPluginData)
       })
 
       compilation.hooks.htmlWebpackPluginAfterHtmlProcessing.tapAsync(PLUGIN_NAME, (htmlPluginData, callback) => {
+        console.log('-----after-html-processing----',htmlPluginData.html);
         this.originalHtml = htmlPluginData.html
+
         callback(null, htmlPluginData)
       })
     })
 
     compiler.hooks.afterEmit.tap(PLUGIN_NAME, async () => {
+      console.log('-------afterEmit------');
       await this.outputSkeletonScreen()
     })
 
@@ -74,11 +80,13 @@ SkeletonPlugin.prototype.apply = function (compiler) { // eslint-disable-line fu
       })
     })
   } else {
+    console.log('------compiler.hooks  false-----');
     compiler.plugin('entry-option', () => {
       this.createServer()
     })
 
     compiler.plugin('compilation', (compilation) => {
+
       compilation.plugin('html-webpack-plugin-before-html-processing', (htmlPluginData, callback) => {
         this.insertScriptToClient(htmlPluginData)
         callback(null, htmlPluginData)

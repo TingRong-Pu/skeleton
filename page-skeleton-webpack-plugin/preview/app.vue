@@ -75,14 +75,20 @@
     },
     watch: {
       routes: function (value, oldValue) {
-        console.log(this.dropDownRoutes)
+        console.log(this.dropDownRoutes,'-----dropDownRoutes  before---')
         if (value !== oldValue && value) {
+          console.log(value,'-----object value----');
           this.dropDownRoutes = Object.keys(value).map(route => ({ route, url: value[route].url }))
+          console.log('this.dropDownRoutes',this.dropDownRoutes );
           this.currentSkeletonScreen = value[this.currentRoute]
+          // this.currentSkeletonScreen = value
+
+
         }
       }
     },
     created() {
+      console.log(this.routes,'----routes-----');
       bus.$on('message', this.handleMessageReceive)
     },
     methods: {

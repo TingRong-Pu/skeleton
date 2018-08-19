@@ -38,7 +38,9 @@ class Server extends EventEmitter {
   }
 
   async initRouters() {
+    
     const { app, staticPath, log } = this
+    log.info('------initRouters------')
     app.use('/', express.static(path.resolve(__dirname, '../preview/dist')))
 
     const staticFiles = await promisify(fs.readdir)(path.resolve(__dirname, '../client'))
@@ -53,11 +55,13 @@ class Server extends EventEmitter {
       })
 
     app.get('/preview.html', async (req, res) => {
+      log.info('-------app.get(/preview.html)')
       fs.createReadStream(path.resolve(__dirname, '..', 'preview/dist/index.html')).pipe(res)
     })
 
     app.get('/:filename', async (req, res) => {
       const { filename } = req.params
+      log.info('filename-------',filename,'--------')
       if (!/\.html$/.test(filename)) return false
       let html = await promisify(fs.readFile)(path.resolve(__dirname, 'templates/notFound.html'), 'utf-8')
       try {
@@ -74,6 +78,7 @@ class Server extends EventEmitter {
 
   initSocket() {
     const { listenServer, log } = this
+    log.info('------initSocket-------')
     const sockjsServer = sockjs.createServer({
       sockjs_url: `/${this.staticPath}/sockjs.bundle.js`,
       log(severity, line) {
@@ -87,7 +92,7 @@ class Server extends EventEmitter {
     sockjsServer.on('connection', (conn) => {
       if (this.sockets.indexOf(conn) === -1) {
         this.sockets.push(conn)
-        // log.info(`client socket: ${conn.id.split('-')[0]}... connect to server`)
+        log.info(`client socket: ${conn.id.split('-')[0]}... connect to server`)
       }
 
       conn.on('data', this.resiveSocketData(conn))
@@ -132,6 +137,7 @@ class Server extends EventEmitter {
     const { log } = this
     return async (data) => {
       const msg = JSON.parse(data)
+      log.info(msg,'---------resiveSocketData--msg-------')
       switch (msg.type) {
         case 'generate': {
           if (!msg.data) return log.info(msg)

@@ -110,6 +110,7 @@ const collectImportantComments = (css) => {
 }
 
 const outputSkeletonScreen = async (originHtml, options, log) => {
+  console.log('-----outputSkeletonScreen--init--');
   const { pathname, staticDir, routes } = options
   return Promise.all(routes.map(async (route) => {
     const trimedRoute = route.replace(/\//g, '')

@@ -21,6 +21,9 @@ const mutations = {
   },
   SET_URL(state, data) {
     console.log(data)
+    // console.log(data['/page/center.html'],'======');
+
+    // state.routes = data['/page/center.html']
     state.routes = data
     Bus.$emit('message', { type: 'success', message: 'Skeleton page has been updated.' })
   },
@@ -40,6 +43,7 @@ const actions = {
     socketWrite('writeShellFile')
   },
   SAVE_CODE ({ commit }, value) {
+    console.log('-------saveShellFile--------');
     socketWrite('saveShellFile', value)
   },
   WRITE_SHELL_SUCCESS({ commit }, message) {
