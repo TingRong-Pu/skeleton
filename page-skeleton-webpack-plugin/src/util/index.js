@@ -25,11 +25,16 @@ function htmlMinify(html, options) {
 }
 
 async function writeShell(routesData, options) {
-  const { pathname, minify: minOptions } = options
-  return Promise.all(Object.keys(routesData).map(async (route) => {
-    const html = routesData[route].html
+  const { pathname, minify: minOptions,routes } = options
+  // return Promise.all(Object.keys(routesData).map(async (route) => {
+  return Promise.all(routes.map(async (route) => {
+  // return Promise(async (route) => {
+    // const html = routesData[route].html
+    const html = routesData.html
     const minifiedHtml = htmlMinify(getCleanedShellHtml(html), minOptions)
-    const trimedRoute = route.replace(/\//g, '')
+    // const trimedRoute = route.replace(/\//g, '')
+    const trimedRoute = route
+    console.log(route,'-------route-========');
     const filePath = path.join(pathname, trimedRoute ? `${trimedRoute}.html` : 'index.html')
     await fse.ensureDir(pathname)
     await promisify(fs.writeFile)(filePath, minifiedHtml, 'utf-8')

@@ -239,8 +239,11 @@ class Skeleton {
   }
 
   async renderRoutes(origin, routes = this.options.routes) {
+    const { log } = this
     return Promise.all(routes.map((route) => {
-      const url = `${origin}${route}`
+      const url = `${origin}/page/${route}.html`
+      log.info(url,'---------',route)
+
       return this.genHtml(url, route)
     }))
   }

@@ -55,6 +55,7 @@ class Server extends EventEmitter {
       })
 
     app.get('/preview.html', async (req, res) => {
+      console.log('-------app.get(/preview.html)');
       log.info('-------app.get(/preview.html)')
       fs.createReadStream(path.resolve(__dirname, '..', 'preview/dist/index.html')).pipe(res)
     })
@@ -62,6 +63,7 @@ class Server extends EventEmitter {
     app.get('/:filename', async (req, res) => {
       const { filename } = req.params
       log.info('filename-------',filename,'--------')
+      console.log('filename-------',filename,'--------')
       if (!/\.html$/.test(filename)) return false
       let html = await promisify(fs.readFile)(path.resolve(__dirname, 'templates/notFound.html'), 'utf-8')
       try {
@@ -148,13 +150,18 @@ class Server extends EventEmitter {
           sockWrite(this.sockets, 'console', preGenMsg)
           try {
             const skeletonScreens = await this.skeleton.renderRoutes(origin)
+            log.info(skeletonScreens,'------skeletonScreens')
             // CACHE html
             this.routesData = {}
             /* eslint-disable no-await-in-loop */
             for (const { route, html } of skeletonScreens) {
+              log.info(route,'---------orgin route--------')
+
               const fileName = await this.writeMagicHtml(html)
+              log.info(fileName,'---------orgin fileName--------')
               const skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
-              this.routesData[route] = {
+              // this.routesData[route] = {
+              this.routesData = {
                 url: origin + route,
                 skeletonPageUrl,
                 qrCode: await generateQR(skeletonPageUrl),
@@ -220,9 +227,16 @@ class Server extends EventEmitter {
         case 'saveShellFile': {
           const { route, html } = msg.data
           if (html) {
-            this.routesData[route].html = html
+            console.log(route,'--------88888888');
+            console.log(this.routesData,'--------999999999');
+            this.routesData.html = html
+            // this.routesData[route].html = html
             const fileName = await this.writeMagicHtml(html)
-            this.routesData[route].skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
+            log.info(this.routesData.skeletonPageUrl,'--------before-------')
+            this.routesData.skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
+            log.info(this.routesData.skeletonPageUrl,'--------after-------')
+            
+            // this.routesData[route].skeletonPageUrl = `http://${this.host}:${this.port}/${fileName}`
             sockWrite([this.previewSocket], 'update', JSON.stringify(this.routesData))
           }
           break

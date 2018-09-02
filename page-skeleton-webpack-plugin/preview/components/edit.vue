@@ -7,7 +7,6 @@
 <script>
   import codeMirror from '../codeMirror'
   import bus from '../bus'
-
   export default {
     data () {
       return {
@@ -38,6 +37,8 @@
         const editor = this.editor = codeMirror(container, codeMirrorConfig)
         editor.on('change', (cm, change) => {
           const html = cm.getValue()
+          console.log(html,'77777777');
+          // debugger
           this.$store.dispatch('SAVE_CODE', { route: this.currentRoute, html })
         })
         bus.$on('set-code', this.setCode)
@@ -48,11 +49,15 @@
     },
     methods: {
       setCode (routesData) {
-        console.log(routesData['/page/center.html'],'--------routesData');
-        console.log(this.currentRoute,'this.currentRoute');
         const { editor } = this
-        if (editor) editor.setValue(routesData[this.currentRoute].html)
-        // if (editor) editor.setValue(routesData['/page/center.html'].html)
+        console.log(routesData,'11111111');
+        let html = routesData.html
+        console.log(this.currentRoute,'222222');
+        if (editor) editor.setValue(html)
+
+        // if (editor) editor.setValue(routesData.html)
+        // if (editor) editor.setValue(routesData[this.currentRoute].html)
+
       }
     }
   }
